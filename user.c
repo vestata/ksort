@@ -2,9 +2,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #define KSORT_DEV "/dev/sort"
+
+struct timespec start, end;
+unsigned long long duration;
+
 
 int main()
 {
@@ -23,11 +28,18 @@ int main()
     for (size_t i = 0; i < n_elements; i++)
         inbuf[i] = rand() % n_elements;
 
+    clock_gettime(CLOCK_MONOTONIC, &start);
     ssize_t r_sz = read(fd, inbuf, size);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
     if (r_sz != size) {
         perror("Failed to write character device");
         goto error;
     }
+
+    duration = (end.tv_sec - start.tv_sec) * 1000000000LL +
+               (end.tv_nsec - start.tv_nsec);
+    printf("Sorting took %llu nanoseconds.\n", duration);
 
     bool pass = true;
     int ret = 0;
