@@ -230,6 +230,7 @@ validate_commit_message() {
     tidied         tidies        tidying
     updated        updates       updating
     used           uses          using
+    Makefile
   )
 
   # enable case insensitive match

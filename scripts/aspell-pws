@@ -172,3 +172,5 @@ xoro
 RNG
 PRNG
 gitignore
+Makefile
+vocabs
