@@ -1,9 +1,11 @@
 #include <linux/cdev.h>
 #include <linux/fs.h>
 #include <linux/init.h>
+#include <linux/ktime.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/version.h>
+
 
 #include "sort.h"
 
@@ -13,6 +15,9 @@ MODULE_DESCRIPTION("Concurrent sorting driver");
 MODULE_VERSION("0.1");
 
 #define DEVICE_NAME "sort"
+
+ktime_t start, end;
+unsigned long long duration;
 
 static dev_t dev = -1;
 static struct cdev cdev;
@@ -59,7 +64,12 @@ static ssize_t sort_read(struct file *file,
      * various types in the future.
      */
     es = sizeof(int);
+    start = ktime_get_ns();
     sort_main(sort_buffer, size / es, es, num_compare);
+    end = ktime_get_ns();
+
+    duration = end - start;
+    printk(KERN_INFO "Sorting took %llu nanoseconds.\n", duration);
 
     len = copy_to_user(buf, sort_buffer, size);
     if (len != 0)
