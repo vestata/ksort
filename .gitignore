@@ -8,3 +8,4 @@
 *.symvers
 user
 test_xoro
+*.csv

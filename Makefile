@@ -36,10 +36,12 @@ rmmod:
 	@sudo rmmod xoro 2>/dev/null || echo
 
 check: all
+	sudo dmesg -C
 	$(MAKE) insmod
 	sudo ./user
 	sudo ./test_xoro
 	$(MAKE) rmmod
+	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
