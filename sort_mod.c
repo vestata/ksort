@@ -7,6 +7,7 @@
 #include <linux/version.h>
 
 
+#include "l_sort.h"
 #include "sort.h"
 
 MODULE_LICENSE("Dual MIT/GPL");
@@ -24,6 +25,14 @@ static struct cdev cdev;
 static struct class *class;
 
 struct workqueue_struct *workqueue;
+
+static unsigned int current_sort_method;
+
+static long sort_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+    current_sort_method = cmd;  // 設置當前排序方法
+    return 0;
+}
 
 static int sort_open(struct inode *inode, struct file *file)
 {
@@ -64,12 +73,20 @@ static ssize_t sort_read(struct file *file,
      * various types in the future.
      */
     es = sizeof(int);
-    start = ktime_get_ns();
-    sort_main(sort_buffer, size / es, es, num_compare);
-    end = ktime_get_ns();
 
-    duration = end - start;
-    printk(KERN_INFO "Sorting took %llu nanoseconds.\n", duration);
+    if (current_sort_method == 0) {
+        start = ktime_get_ns();
+        sort_main(sort_buffer, size / es, es, num_compare);
+        end = ktime_get_ns();
+        duration = end - start;
+        printk(KERN_INFO "ksort took %llu nanoseconds.\n", duration);
+    } else if (current_sort_method == 1) {
+        start = ktime_get_ns();
+        l_sort(sort_buffer, size / es, es, num_compare, 0);
+        end = ktime_get_ns();
+        duration = end - start;
+        printk(KERN_INFO "l_sort took %llu nanoseconds.\n", duration);
+    }
 
     len = copy_to_user(buf, sort_buffer, size);
     if (len != 0)
@@ -93,6 +110,7 @@ static const struct file_operations fops = {
     .open = sort_open,
     .release = sort_release,
     .owner = THIS_MODULE,
+    .unlocked_ioctl = sort_ioctl,
 };
 
 static int __init sort_init(void)

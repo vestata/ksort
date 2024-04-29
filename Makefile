@@ -36,6 +36,22 @@ rmmod:
 	@sudo rmmod sort 2>/dev/null || echo
 	@sudo rmmod xoro 2>/dev/null || echo
 
+ksort:
+	sudo dmesg -C
+	$(MAKE) insmod
+	sudo ./user ksort
+	sudo ./test_xoro
+	$(MAKE) rmmod
+	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
+
+l_sort:
+	sudo dmesg -C
+	$(MAKE) insmod
+	sudo ./user l_sort
+	sudo ./test_xoro
+	$(MAKE) rmmod
+	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
+
 check: all
 	sudo dmesg -C
 	$(MAKE) insmod

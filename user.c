@@ -2,22 +2,40 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
 
 #define KSORT_DEV "/dev/sort"
+#define SORT_METHOD_KSORT 0
+#define SORT_METHOD_L_SORT 1
 
 struct timespec start, end;
 unsigned long long duration;
 
-
-int main()
+int main(int argc, char **argv)
 {
+    unsigned int sort_method = SORT_METHOD_KSORT;  // 預設使用 ksort
+
+    if (argc > 1) {
+        if (strcmp(argv[1], "ksort") == 0) {
+            sort_method = SORT_METHOD_KSORT;
+        } else if (strcmp(argv[1], "l_sort") == 0) {
+            sort_method = SORT_METHOD_L_SORT;
+        } else {
+            fprintf(stderr, "Invalid sort method. Use ./user [ksort|l_sort]\n");
+            return -1;
+        }
+    }
+
     int fd = open(KSORT_DEV, O_RDWR);
     if (fd < 0) {
         perror("Failed to open character device");
         goto error;
     }
+
+    ioctl(fd, sort_method);
 
     size_t n_elements = 1000;
     size_t size = n_elements * sizeof(int);
