@@ -17,6 +17,11 @@ unsigned long long duration;
 int main(int argc, char **argv)
 {
     unsigned int sort_method = SORT_METHOD_KSORT;  // 預設使用 ksort
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s [ksort|l_sort] [n_elements]\n", argv[0]);
+        return -1;
+    }
+
 
     if (argc > 1) {
         if (strcmp(argv[1], "ksort") == 0) {
@@ -37,7 +42,7 @@ int main(int argc, char **argv)
 
     ioctl(fd, sort_method);
 
-    size_t n_elements = 1000;
+    size_t n_elements = (size_t) atoi(argv[2]);
     size_t size = n_elements * sizeof(int);
     int *inbuf = malloc(size);
     if (!inbuf)
@@ -47,7 +52,7 @@ int main(int argc, char **argv)
         inbuf[i] = rand() % n_elements;
 
     clock_gettime(CLOCK_MONOTONIC, &start);
-    ssize_t r_sz = read(fd, inbuf, size);
+    size_t r_sz = read(fd, inbuf, size);
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     if (r_sz != size) {

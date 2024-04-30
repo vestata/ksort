@@ -39,18 +39,17 @@ rmmod:
 ksort:
 	sudo dmesg -C
 	$(MAKE) insmod
-	sudo ./user ksort
+	sudo ./test.sh ksort
 	sudo ./test_xoro
 	$(MAKE) rmmod
-	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
+
 
 l_sort:
 	sudo dmesg -C
 	$(MAKE) insmod
-	sudo ./user l_sort
+	sudo ./test.sh l_sort
 	sudo ./test_xoro
 	$(MAKE) rmmod
-	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
 
 check: all
 	sudo dmesg -C
