@@ -17,7 +17,7 @@ for n in $(seq 1000 500 20000); do
     sudo ./user $method $n
     
     # Capture the last sorting time from dmesg and append to the CSV
-    duration=$(sudo dmesg | grep "took" | awk '{print $5}')
+    duration=$(sudo dmesg | grep "took" | awk '{print $4}')
     echo $duration
     echo "$n, $duration" >> "$output_file"
 done

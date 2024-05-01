@@ -10,6 +10,7 @@
 #define KSORT_DEV "/dev/sort"
 #define SORT_METHOD_KSORT 0
 #define SORT_METHOD_L_SORT 1
+#define SORT_METHOD_TIMSORT 2
 
 struct timespec start, end;
 unsigned long long duration;
@@ -18,7 +19,8 @@ int main(int argc, char **argv)
 {
     unsigned int sort_method = SORT_METHOD_KSORT;  // 預設使用 ksort
     if (argc < 3) {
-        fprintf(stderr, "Usage: %s [ksort|l_sort] [n_elements]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [ksort|l_sort|timsort] [n_elements]\n",
+                argv[0]);
         return -1;
     }
 
@@ -28,8 +30,11 @@ int main(int argc, char **argv)
             sort_method = SORT_METHOD_KSORT;
         } else if (strcmp(argv[1], "l_sort") == 0) {
             sort_method = SORT_METHOD_L_SORT;
+        } else if (strcmp(argv[1], "timsort") == 0) {
+            sort_method = SORT_METHOD_TIMSORT;
         } else {
-            fprintf(stderr, "Invalid sort method. Use ./user [ksort|l_sort]\n");
+            fprintf(stderr,
+                    "Invalid sort method. Use ./user [ksort|l_sort|timsort]\n");
             return -1;
         }
     }

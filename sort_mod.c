@@ -9,6 +9,7 @@
 
 #include "l_sort.h"
 #include "sort.h"
+#include "timsort.h"
 
 MODULE_LICENSE("Dual MIT/GPL");
 MODULE_AUTHOR("National Cheng Kung University, Taiwan");
@@ -86,6 +87,12 @@ static ssize_t sort_read(struct file *file,
         end = ktime_get_ns();
         duration = end - start;
         printk(KERN_INFO "l_sort took %llu nanoseconds.\n", duration);
+    } else if (current_sort_method == 2) {
+        start = ktime_get_ns();
+        timsort(sort_buffer, size / es, es, num_compare);
+        end = ktime_get_ns();
+        duration = end - start;
+        printk(KERN_INFO "timsort took %llu nanoseconds.\n", duration);
     }
 
     len = copy_to_user(buf, sort_buffer, size);

@@ -2,7 +2,8 @@ obj-m += sort.o
 sort-objs := \
     sort_mod.o \
     sort_impl.o \
-	l_sort.o
+	l_sort.o \
+	timsort.o
 
 obj-m += xoro.o
 xoro-objs := \
@@ -43,11 +44,17 @@ ksort:
 	sudo ./test_xoro
 	$(MAKE) rmmod
 
-
 l_sort:
 	sudo dmesg -C
 	$(MAKE) insmod
 	sudo ./test.sh l_sort
+	sudo ./test_xoro
+	$(MAKE) rmmod
+
+timsort:
+	sudo dmesg -C
+	$(MAKE) insmod
+	sudo ./test.sh timsort
 	sudo ./test_xoro
 	$(MAKE) rmmod
 
@@ -57,7 +64,6 @@ check: all
 	sudo ./user
 	sudo ./test_xoro
 	$(MAKE) rmmod
-	sudo dmesg | grep "Sorting took" | awk '{print $$(NF-1)}' >> out.csv
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
